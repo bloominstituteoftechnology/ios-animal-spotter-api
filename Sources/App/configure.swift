@@ -41,7 +41,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
         port: databasePort,
         username: "vapor",
         database: databaseName,
-        password: "password")
+        password: nil)
     let database = PostgreSQLDatabase(config: databaseConfig)
     databases.add(database: database, as: .psql)
     services.register(databases)
