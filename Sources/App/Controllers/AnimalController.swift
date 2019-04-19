@@ -8,7 +8,6 @@ final class AnimalController: RouteCollection {
         let animalRoutes = router.grouped("api", "animals")
         
         animalRoutes.post("new", use: createHandler)
-        animalRoutes.delete(Animal.parameter, use: delete)
     }
     
     /// Saves a decoded `Animal` to the database.
@@ -21,13 +20,4 @@ final class AnimalController: RouteCollection {
             return animal.save(on: req)
         }
     }
-
-    /// Deletes a parameterized `Animal`.
-    func delete(_ req: Request) throws -> Future<HTTPStatus> {
-        return try req.parameters.next(Animal.self).flatMap { animal in
-            return animal.delete(on: req)
-        }.transform(to: .ok)
-    }
-    
-    
 }
