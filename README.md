@@ -23,9 +23,7 @@
 
 The base URL for this API is https://lambdaanimalspotter.vapor.cloud/api
 
---- 
-
-### Sign Up
+## Sign Up
 
 **Endpoint:** `/users/signup`
 
@@ -48,9 +46,7 @@ JSON should be POSTed in the following format:
 
 **Code:** `200 OK`
 
---- 
-
-### Log In
+## Log In
 
 **Endpoint:** `/users/login`
 
@@ -81,9 +77,7 @@ The `token` may be used to authenticate a request.
 }
 ```
 
----
-
-### Get All Animal Names
+## Get All Animal Names
 
 **Endpoint:** `/animals/all`
 
@@ -128,9 +122,7 @@ The `token` may be used to authenticate a request.
 }
 ```
 
----
-
-### Get A Specfic Animal
+## Get A Specfic Animal
 
 **Endpoint:** `animals/animalName` where `animalName` is some animal's name.
 
