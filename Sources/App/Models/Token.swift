@@ -7,10 +7,10 @@
 
 import Foundation
 import Vapor
-import FluentPostgreSQL
+import FluentSQLite
 import Authentication
 
-final class Token: PostgreSQLModel {
+final class Token: SQLiteModel {
     var id: Int?
     var token: String
     var userId: User.ID

@@ -1,9 +1,9 @@
-import FluentPostgreSQL
 import Vapor
 import Authentication
+import FluentSQLite
 
-final class Animal: PostgreSQLModel {
-    var id: Int?
+final class Animal {
+    let id: Int
     let name: String
     let timestamp: Date
     let latitude: Double
@@ -11,7 +11,7 @@ final class Animal: PostgreSQLModel {
     let description: String
     let imageURL: String
     
-    init(id: Int?, name: String, timestamp: Date, latitude: Double, longitude: Double, description: String, imageURL: String) {
+    init(id: Int, name: String, timestamp: Date, latitude: Double, longitude: Double, description: String, imageURL: String) {
         self.id = id
         self.name = name
         self.timestamp = timestamp
@@ -21,9 +21,6 @@ final class Animal: PostgreSQLModel {
         self.imageURL = imageURL
     }
 }
-
-/// Allows `Animal` to be used as a dynamic migration.
-extension Animal: Migration { }
 
 /// Allows `Animal` to be encoded to and decoded from HTTP messages.
 extension Animal: Content { }

@@ -7,7 +7,7 @@
 
 import Vapor
 import Crypto
-import FluentPostgreSQL
+import FluentSQLite
 
 struct UserController: RouteCollection {
     
@@ -34,15 +34,12 @@ struct UserController: RouteCollection {
     
     /// Returns an array of animal names to be used in the master list view
     func getAnimalsHandler(_ req: Request) throws -> Future<[String]> {
-        return Animal.query(on: req).all().map(to: [String].self, { (animals) in
-            var animalNames: [String] = []
-            
-            for future in animals {
-                animalNames.append(future.name)
-            }
-            
-            return animalNames
-        })
+        
+        let promise = req.eventLoop.newPromise([String].self)
+    
+        promise.succeed(result: self.animalController.animalNames)
+        
+        return promise.futureResult
     }
     
     /// Returns a complete Animal object based on the name included in the URL. i.e. /api/animals/lion would return the lion Animal object.
@@ -50,11 +47,14 @@ struct UserController: RouteCollection {
         
         let animalName = try req.parameters.next(String.self).capitalized
         
-        return Animal
-            .query(on: req)
-            .filter(\.name == animalName)
-            .first()
-            .unwrap(or: Abort(.notFound))
+        let promise = req.eventLoop.newPromise(Animal.self)
+        
+        if let animal = animalController.animals.filter({$0.name == animalName}).first {
+            promise.succeed(result: animal)
+            return promise.futureResult
+        } else {
+            throw Abort(.notFound)
+        }
     }
     
     /// Creates a User object and saves it to the database. Also of note is that the password is saved as a hash. This expects a User object as the body of the request
@@ -94,4 +94,6 @@ struct UserController: RouteCollection {
             }
         }
     }
+    
+    let animalController = AnimalController()
 }

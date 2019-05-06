@@ -6,10 +6,10 @@
 //
 
 import Vapor
-import FluentPostgreSQL
+import FluentSQLite
 import Authentication
 
-final class User: PostgreSQLModel {
+final class User: SQLiteModel {
     var id: Int?
     var username: String
     var password: String
