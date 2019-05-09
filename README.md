@@ -122,7 +122,7 @@ The `token` may be used to authenticate a request.
 }
 ```
 
-## Get A Specfic Animal
+## Get A Specific Animal
 
 **Endpoint:** `animals/animalName` where `animalName` is some animal's name.
 
