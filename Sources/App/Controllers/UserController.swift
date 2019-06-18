@@ -15,7 +15,7 @@ struct UserController: RouteCollection {
         let usersRoute = router.grouped("api", "users")
         
         usersRoute.post("login", use: login)
-        usersRoute.post("signup", use: createHandler)
+        usersRoute.post("signup", use: createUserHandler)
         
         // tokenAuthMiddleware looks for the Authorization header
         let tokenAuthMiddleware = User.tokenAuthMiddleware()
@@ -33,6 +33,7 @@ struct UserController: RouteCollection {
 //        let usersAuthGroup = usersRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
         
         usersRoute.delete("clear", use: clearUsers)
+        animalsRoute.delete("reset", use: resetAnimalsHandler)
     }
     
     // The two Animal handlers won't work if I try to put them in the AnimalController. My assumption is that Vapor doesn't like having multiple instances of the token/guard auth middleware.
@@ -84,8 +85,13 @@ struct UserController: RouteCollection {
             })
     }
     
+    func resetAnimalsHandler(_ req: Request) throws -> HTTPResponseStatus {
+        animalController.animals = animalController.resetAnimals()
+        return .ok
+    }
+    
     /// Creates a User object and saves it to the database. Also of note is that the password is saved as a hash. This expects a User object as the body of the request
-    func createHandler(_ req: Request) throws -> Future<PublicUser> {
+    func createUserHandler(_ req: Request) throws -> Future<PublicUser> {
         
         return try req.content
             .decode(User.self)
