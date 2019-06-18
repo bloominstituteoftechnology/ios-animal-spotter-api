@@ -19,8 +19,6 @@ final class User: SQLiteModel {
         self.username = username
         self.password = password
     }
-    
-    
 }
 
 final class PublicUser: Codable {

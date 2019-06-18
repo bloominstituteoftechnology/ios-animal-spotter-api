@@ -3,7 +3,7 @@ import Authentication
 import FluentSQLite
 
 final class Animal: Content {
-    let id: Int
+    var id: Int?
     let name: String
     let timeSeen: Date
     let latitude: Double
@@ -21,7 +21,7 @@ final class Animal: Content {
         case imageURL
     }
     
-    init(id: Int, name: String, timeSeen: Date, latitude: Double, longitude: Double, description: String, imageURL: String) {
+    init(id: Int?, name: String, timeSeen: Date, latitude: Double, longitude: Double, description: String, imageURL: String) {
         self.id = id
         self.name = name
         self.timeSeen = timeSeen
@@ -34,7 +34,7 @@ final class Animal: Content {
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
-        let id = try container.decode(Int.self, forKey: .id)
+        let id = try container.decodeIfPresent(Int.self, forKey: .id)
         let name = try container.decode(String.self, forKey: .name)
         let timeSeenInterval = try container.decode(TimeInterval.self, forKey: .timeSeen)
         let timeSeen = Date(timeIntervalSince1970: timeSeenInterval)
@@ -49,7 +49,7 @@ final class Animal: Content {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
-        try container.encode(id, forKey: .id)
+        try container.encodeIfPresent(id, forKey: .id)
         try container.encode(name, forKey: .name)
         try container.encode(timeSeen.timeIntervalSince1970, forKey: .timeSeen)
         try container.encode(latitude, forKey: .latitude)

@@ -28,6 +28,11 @@ struct UserController: RouteCollection {
         
         tokenAuthGroup.get("all", use: getAnimalsHandler)
         tokenAuthGroup.get(String.parameter, use: getAnimalHandler)
+        tokenAuthGroup.post("new", use: addAnimalHandler)
+        
+//        let usersAuthGroup = usersRoute.grouped(tokenAuthMiddleware, guardAuthMiddleware)
+        
+        usersRoute.delete("clear", use: clearUsers)
     }
     
     // The two Animal handlers won't work if I try to put them in the AnimalController. My assumption is that Vapor doesn't like having multiple instances of the token/guard auth middleware.
@@ -36,7 +41,7 @@ struct UserController: RouteCollection {
     func getAnimalsHandler(_ req: Request) throws -> Future<[String]> {
         
         let promise = req.eventLoop.newPromise([String].self)
-    
+        
         promise.succeed(result: self.animalController.animalNames)
         
         return promise.futureResult
@@ -57,6 +62,28 @@ struct UserController: RouteCollection {
         }
     }
     
+    func addAnimalHandler(_ req: Request) throws -> Future<HTTPResponseStatus> {
+        
+        return try req.content
+            .decode(Animal.self)
+            .flatMap({ (animal) -> EventLoopFuture<HTTPResponseStatus> in
+                
+                var animal = animal
+                
+                defer { self.animalController.animals.append(animal) }
+                
+                if animal.id == nil ||
+                    self.animalController.animals.contains(where: { $0.id == animal.id })  {
+                    
+                    animal.id = self.animalController.animals.count + 1
+                }
+                
+                let promise = req.eventLoop.newPromise(HTTPResponseStatus.self)
+                promise.succeed(result: .created)
+                return promise.futureResult
+            })
+    }
+    
     /// Creates a User object and saves it to the database. Also of note is that the password is saved as a hash. This expects a User object as the body of the request
     func createHandler(_ req: Request) throws -> Future<PublicUser> {
         
@@ -64,12 +91,12 @@ struct UserController: RouteCollection {
             .decode(User.self)
             .flatMap({ user -> Future<PublicUser> in
                 
-            // TODO: Figure out how to log in using the salted password hash
-            //            let saltedPassword = user.password + "com.lambdaschool.AnimalSpotter" + ".\(user.username)"
-            user.password = try BCrypt.hash(user.password)
-            let publicUser = user.save(on: req).convertToPublic()
-            return publicUser
-        })
+                // TODO: Figure out how to log in using the salted password hash
+                //            let saltedPassword = user.password + "com.lambdaschool.AnimalSpotter" + ".\(user.username)"
+                user.password = try BCrypt.hash(user.password)
+                let publicUser = user.save(on: req).convertToPublic()
+                return publicUser
+            })
     }
     
     /// Logs in the user, and returns a token to be used for authenticating protected requests like GETting Animals. This expects a User object as the body of the request. The user must have signed up using the /api/users/signup endpoint before trying to log in.
@@ -93,6 +120,19 @@ struct UserController: RouteCollection {
                     }
             }
         }
+    }
+    
+    func clearUsers(_ req: Request) throws -> Future<HTTPResponseStatus> {
+        return User.query(on: req)
+            .all().flatMap { (users) -> EventLoopFuture<HTTPResponseStatus> in
+                for user in users {
+                    _ = user.delete(on: req)
+                }
+                let promise = req.eventLoop.newPromise(HTTPResponseStatus.self)
+                promise.succeed(result: .ok)
+                return promise.futureResult
+        }
+        
     }
     
     let animalController = AnimalController()
