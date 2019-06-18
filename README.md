@@ -153,3 +153,62 @@ The `token` may be used to authenticate a request.
 "imageURL": "https://user-images.githubusercontent.com/16965587/57208108-357e8000-6f8f-11e9-89fa-acd05e383c63.jpg"
 }
 ```
+
+## Add a new Animal
+
+**Endpoint:** `animals/new`
+
+**Method:** `POST`
+
+**Auth Required:** YES
+
+**Required Header:** 
+
+| Key | Example Value | Description |
+|---|---|---|
+| `Authorization` | `Bearer fsMd9aHpoJ62vo4OvLC79MDqd38oE2ihkx6A1KeFwek` | "Bearer " + The token returned from logging in | 
+
+#### Success Response
+
+**Code:** `201 Created`
+
+**Response:**
+
+-None- 
+
+## Reset Animals
+
+**Description:** This should only be used if something is wrong with the JSON structure due to a POSTed Animal breaking something. This shouldn't happen, but I added it just in case.
+
+**Endpoint:** `animals/reset`
+
+**Method:** `DELETE`
+
+**Auth Required:** NO
+
+#### Success Response
+
+**Code:** `200 OK`
+
+**Response:**
+
+-None- 
+
+
+## Clear Users
+
+**Description:** This is used to clear out the database of User objects.
+
+**Endpoint:** `users/clear`
+
+**Method:** `DELETE`
+
+**Auth Required:** NO
+
+#### Success Response
+
+**Code:** `200 OK`
+
+**Response:**
+
+-None- 
