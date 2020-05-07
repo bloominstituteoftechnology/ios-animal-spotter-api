@@ -57,6 +57,7 @@ struct UserController: RouteCollection {
         
         if let animal = animalController.animals.filter({$0.name == animalName}).first {
             promise.succeed(result: animal)
+            
             return promise.futureResult
         } else {
             throw Abort(.notFound)
