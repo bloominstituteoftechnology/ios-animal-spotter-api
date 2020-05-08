@@ -28,8 +28,8 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     
     // Configure migrations
     var migrations = MigrationConfig()
-    migrations.add(model: Token.self, database: .sqlite)
-    migrations.add(model: User.self, database: .sqlite)
+    migrations.add(model: Token.self, database: DatabaseIdentifier<Token.Database>.sqlite)
+    migrations.add(model: User.self, database: DatabaseIdentifier<User.Database>.sqlite)
     services.register(migrations)
     
     try services.register(AuthenticationProvider())
